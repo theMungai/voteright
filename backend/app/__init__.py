@@ -1,13 +1,9 @@
-print(">>> Using INIT file:", __file__)
-
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from app import models
-
 
 db  = SQLAlchemy()
 mg  = Migrate()
@@ -30,6 +26,9 @@ def create_app():
     bc.init_app(app)
     jwt.init_app(app)
 
+    # 👇 MOVE THIS IMPORT INSIDE THE FUNCTION
+    from app import models
+
     from app.auth   import auth_bp
     from app.routes import poll_bp
     from app.admin  import admin_bp
@@ -38,7 +37,6 @@ def create_app():
     app.register_blueprint(poll_bp,   url_prefix="/api/polls")
     app.register_blueprint(admin_bp,  url_prefix="/api")
 
-    # ✅ Table creation using context (Flask 3.x compatible)
     with app.app_context():
         db.create_all()
 
